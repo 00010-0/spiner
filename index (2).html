@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>ARTEweb — Estudio de diseño y desarrollo web</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<style>
+  :root {
+    --paper: #efe9dd;
+    --paper-2: #e6dfd0;
+    --ink: #15110e;
+    --ink-soft: #2a2420;
+    --accent: #ff3b14;
+    --muted: #8a8175;
+    --line: rgba(21, 17, 14, 0.14);
+    --line-on-ink: rgba(239, 233, 221, 0.16);
+    --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+    --font-sans: "Hanken Grotesk", system-ui, sans-serif;
+    --font-serif: "Newsreader", Georgia, serif;
+    --font-mono: "Space Mono", ui-monospace, "SFMono-Regular", monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--accent); color: var(--paper); }
+
+  em, .it {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .eyebrow, .label, .serv .num, .chip, .nav-links, .proj-go,
+  .ci-label, .role { font-family: var(--font-mono); }
+
+  a { color: inherit; text-decoration: none; }
+
+  .wrap { width: min(1280px, 92vw); margin: 0 auto; }
+
+  /* ---------- NAV ---------- */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px clamp(16px, 4vw, 48px);
+    mix-blend-mode: difference;
+    color: #fff;
+  }
+  .brand {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  .brand b { font-weight: 700; }
+  .nav-links {
+    display: flex;
+    gap: clamp(14px, 2vw, 34px);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .nav-links a { position: relative; padding: 4px 0; }
+  .nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%; height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  @media (max-width: 720px) { .nav-links { display: none; } }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    position: relative;
+    background: var(--ink);
+    color: var(--paper);
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 120px 0 56px;
+    overflow: hidden;
+  }
+  #spinner {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  .hero-grain {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.11;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .hero-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(125% 95% at 50% 42%, rgba(21,17,14,0) 38%, rgba(21,17,14,0.34) 78%, rgba(21,17,14,0.62) 100%);
+  }
+  .hero .wrap { position: relative; z-index: 2; pointer-events: none; }
+  .hero .wrap a, .hero .wrap .hint { pointer-events: auto; }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--paper);
+    opacity: 0.75;
+    margin-bottom: 28px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  h1.display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(3rem, 10.5vw, 10.5rem);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    max-width: 14ch;
+  }
+  h1.display em { font-size: 1.04em; letter-spacing: -0.01em; color: var(--accent); }
+  .hero-sub {
+    margin-top: 32px;
+    max-width: 46ch;
+    font-size: clamp(1rem, 1.4vw, 1.3rem);
+    line-height: 1.5;
+    color: var(--paper);
+    opacity: 0.82;
+  }
+  .hint {
+    position: absolute;
+    bottom: 40px;
+    right: 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    opacity: 0.6;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hint .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.6s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(2.2); opacity: 0.3; }
+  }
+
+  /* ---------- SECTION SCAFFOLD ---------- */
+  section { position: relative; }
+  .section-pad { padding: clamp(80px, 12vh, 160px) 0; }
+  .label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  h2.head {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.2rem, 6vw, 5.5rem);
+    line-height: 0.96;
+    letter-spacing: -0.035em;
+  }
+
+  /* ---------- ESTUDIO ---------- */
+  .estudio-quote {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(1.8rem, 4.6vw, 4rem);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    max-width: 20ch;
+    margin-bottom: 64px;
+  }
+  .estudio-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(28px, 5vw, 80px);
+    max-width: 980px;
+    margin-left: auto;
+  }
+  .estudio-grid p {
+    font-size: clamp(1rem, 1.3vw, 1.18rem);
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .estudio-grid p b { font-weight: 600; color: var(--ink); }
+  @media (max-width: 720px) { .estudio-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- SERVICIOS ---------- */
+  #servicios { background: var(--ink); color: var(--paper); }
+  #servicios .label { color: var(--accent); }
+  #servicios .label::after { background: var(--line-on-ink); }
+  #servicios h2.head { margin-bottom: 56px; }
+  .serv-list { border-top: 1px solid var(--line-on-ink); }
+  .serv {
+    display: grid;
+    grid-template-columns: 80px 1fr 2fr;
+    gap: 24px;
+    align-items: baseline;
+    padding: clamp(22px, 3vw, 40px) 8px;
+    border-bottom: 1px solid var(--line-on-ink);
+    transition: padding-left 0.4s cubic-bezier(0.16,1,0.3,1), background 0.4s;
+  }
+  .serv:hover { padding-left: 28px; background: rgba(255,59,20,0.06); }
+  .serv .num {
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .serv .s-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3.2vw, 2.6rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.04;
+  }
+  .serv .s-desc {
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    line-height: 1.5;
+    color: var(--paper);
+    opacity: 0.66;
+    max-width: 42ch;
+  }
+  @media (max-width: 720px) {
+    .serv { grid-template-columns: 48px 1fr; }
+    .serv .s-desc { grid-column: 2; }
+  }
+
+  /* ---------- PROYECTOS ---------- */
+  #proyectos h2.head { margin-bottom: 56px; max-width: 16ch; }
+  .proj {
+    display: block;
+    border-top: 1px solid var(--line);
+    padding: clamp(28px, 4vw, 48px) 0;
+    transition: background 0.4s, padding-left 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .proj:last-of-type { border-bottom: 1px solid var(--line); }
+  .proj:hover { padding-left: 24px; background: var(--paper-2); }
+  .proj-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .proj-name {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 6vw, 5rem);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 0.95;
+  }
+  .proj-name em { color: var(--accent); }
+  .proj-go {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .proj-go .arrow { transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); }
+  .proj:hover .proj-go .arrow { transform: translate(6px, -6px); }
+  .proj-meta {
+    margin-top: 18px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- EQUIPO ---------- */
+  #equipo { background: var(--paper-2); }
+  #equipo h2.head { margin-bottom: 56px; max-width: 14ch; }
+  .team {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(20px, 2.4vw, 36px);
+  }
+  .member {
+    border-top: 2px solid var(--ink);
+    padding-top: 22px;
+  }
+  .mono {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--accent);
+    margin-bottom: 40px;
+  }
+  .member h3 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .member .role {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 6px 0 16px;
+  }
+  .member p { font-size: 0.96rem; line-height: 1.5; color: var(--ink-soft); }
+  @media (max-width: 900px) { .team { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .team { grid-template-columns: 1fr; } }
+
+  /* ---------- CONTACTO ---------- */
+  #contacto { background: var(--ink); color: var(--paper); }
+  .contact-head {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2.4rem, 8vw, 7rem);
+    line-height: 0.94;
+    letter-spacing: -0.04em;
+    max-width: 12ch;
+  }
+  .contact-head em { color: var(--accent); }
+  .cta-row { margin-top: 56px; display: flex; flex-wrap: wrap; gap: 20px; align-items: center; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--accent);
+    color: var(--paper);
+    font-family: var(--font-sans);
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+    font-weight: 600;
+    padding: 20px 32px;
+    border-radius: 100px;
+    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), background 0.3s;
+  }
+  .btn:hover { transform: translateY(-3px); background: #ff5733; }
+  .btn .arrow { transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); }
+  .btn:hover .arrow { transform: translate(5px, -5px); }
+  .contact-info {
+    margin-top: 80px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(28px, 6vw, 90px);
+    border-top: 1px solid var(--line-on-ink);
+    padding-top: 36px;
+  }
+  .contact-info .ci-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.5;
+    margin-bottom: 8px;
+  }
+  .contact-info .ci-val {
+    font-family: var(--font-sans);
+    font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .contact-info a.ci-val { border-bottom: 1px solid transparent; transition: border-color 0.3s; }
+  .contact-info a.ci-val:hover { border-color: var(--accent); }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    background: var(--ink);
+    color: var(--paper);
+    border-top: 1px solid var(--line-on-ink);
+    padding: 48px 0 40px;
+  }
+  .foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .foot .brand { font-size: clamp(2rem, 7vw, 5rem); font-weight: 700; }
+  .foot .f-meta { text-align: right; font-size: 13px; opacity: 0.6; line-height: 1.7; }
+  @media (max-width: 520px) { .foot .f-meta { text-align: left; } }
+
+  /* ---------- REVEAL ---------- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+  }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+
+  <nav>
+    <a href="#inicio" class="brand">arte<b>web</b></a>
+    <div class="nav-links">
+      <a href="#estudio">Estudio</a>
+      <a href="#servicios">Servicios</a>
+      <a href="#proyectos">Proyectos</a>
+      <a href="#equipo">Equipo</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero" id="inicio">
+    <model-viewer id="spinner"
+      src="assets/spinner.glb"
+      alt="Fidget spinner ARTEweb"
+      auto-rotate
+      auto-rotate-delay="0"
+      rotation-per-second="160deg"
+      camera-controls
+      touch-action="pan-y"
+      disable-zoom
+      interaction-prompt="none"
+      shadow-intensity="0.85"
+      exposure="1.15"
+      camera-orbit="0deg 78deg 110%"
+      style="background: transparent;">
+    </model-viewer>
+    <div class="hero-vignette"></div>
+    <div class="hero-grain"></div>
+    <div class="wrap">
+      <span class="eyebrow">Estudio de diseño y desarrollo web</span>
+      <h1 class="display">Damos forma a ideas en <em>la&nbsp;web.</em></h1>
+      <p class="hero-sub">Somos ARTEweb. Diseñamos, construimos y mantenemos páginas web que hacen brillar a las marcas que las habitan.</p>
+      <div class="hint"><span class="dot"></span> Arrástrala para hacerla girar</div>
+    </div>
+  </header>
+
+  <!-- ESTUDIO -->
+  <section id="estudio" class="section-pad">
+    <div class="wrap">
+      <div class="label reveal">El estudio</div>
+      <p class="estudio-quote reveal">«Cada proyecto es una pieza única que merece pensarse, diseñarse y cuidarse con criterio.»</p>
+      <div class="estudio-grid">
+        <p class="reveal"><b>ARTEweb es un equipo de personas</b> que vive entre el diseño y el código. Unimos sensibilidad artística con rigor técnico para crear experiencias digitales con carácter.</p>
+        <p class="reveal">Trabajamos en todo lo relacionado con la web: desde <b>currículums digitales</b> y portfolios personales, hasta <b>sitios corporativos</b>, tiendas online y proyectos a medida. Y no desaparecemos tras la entrega: cuidamos, actualizamos y hacemos crecer cada web a largo plazo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section id="servicios" class="section-pad">
+    <div class="wrap">
+      <div class="label reveal">Servicios</div>
+      <h2 class="head reveal">Lo que hacemos,<br />hecho <em>a mano</em>.</h2>
+      <div class="serv-list">
+        <div class="serv reveal">
+          <span class="num">01</span>
+          <span class="s-title">Diseño Web</span>
+          <span class="s-desc">Interfaces con personalidad. UX/UI cuidado al detalle, pensado para tu marca.</span>
+        </div>
+        <div class="serv reveal">
+          <span class="num">02</span>
+          <span class="s-title">Desarrollo a medida</span>
+          <span class="s-desc">Webs rápidas, limpias y responsive. Código construido específicamente para ti.</span>
+        </div>
+        <div class="serv reveal">
+          <span class="num">03</span>
+          <span class="s-title">Currículums digitales</span>
+          <span class="s-desc">CV y portfolios online que destacan tu perfil profesional ante quien importa.</span>
+        </div>
+        <div class="serv reveal">
+          <span class="num">04</span>
+          <span class="s-title">Tiendas online</span>
+          <span class="s-desc">E-commerce completo, con pagos seguros y una experiencia que vende.</span>
+        </div>
+        <div class="serv reveal">
+          <span class="num">05</span>
+          <span class="s-title">Mantenimiento</span>
+          <span class="s-desc">Seguridad, copias, actualizaciones y soporte continuo. Tu web siempre al día.</span>
+        </div>
+        <div class="serv reveal">
+          <span class="num">06</span>
+          <span class="s-title">SEO &amp; visibilidad</span>
+          <span class="s-desc">Para que te encuentren primero. Más tráfico, más clientes, mejores resultados.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROYECTOS -->
+  <section id="proyectos" class="section-pad">
+    <div class="wrap">
+      <div class="label reveal">Proyectos seleccionados</div>
+      <h2 class="head reveal">Trabajo que <em>habla</em> por sí solo.</h2>
+      <a class="proj reveal" href="https://00010-0.github.io/eclipse-demo-3/" target="_blank" rel="noopener">
+        <div class="proj-top">
+          <span class="proj-name">Eclipse <em>bar</em></span>
+          <span class="proj-go">Ver proyecto <span class="arrow">↗</span></span>
+        </div>
+        <div class="proj-meta">
+          <span class="chip">Diseño web</span>
+          <span class="chip">Desarrollo</span>
+          <span class="chip">Carta QR</span>
+          <span class="chip">El Arenal · Mallorca</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- EQUIPO -->
+  <section id="equipo" class="section-pad">
+    <div class="wrap">
+      <div class="label reveal">Equipo</div>
+      <h2 class="head reveal">Personas detrás<br />de cada <em>pixel</em>.</h2>
+      <div class="team">
+        <div class="member reveal">
+          <div class="mono">a</div>
+          <h3>Dirección creativa</h3>
+          <div class="role">Diseño &amp; arte</div>
+          <p>Define la dirección visual y mantiene la coherencia en cada proyecto.</p>
+        </div>
+        <div class="member reveal">
+          <div class="mono">r</div>
+          <h3>Desarrollo frontend</h3>
+          <div class="role">Interfaz &amp; código</div>
+          <p>Convierte los diseños en webs vivas, fluidas y perfectas en cualquier pantalla.</p>
+        </div>
+        <div class="member reveal">
+          <div class="mono">t</div>
+          <h3>Desarrollo backend</h3>
+          <div class="role">Lógica &amp; datos</div>
+          <p>Construye la base sólida y segura sobre la que todo funciona.</p>
+        </div>
+        <div class="member reveal">
+          <div class="mono">e</div>
+          <h3>SEO &amp; estrategia</h3>
+          <div class="role">Visibilidad</div>
+          <p>Hace que el trabajo llegue al público correcto y genere resultados.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" class="section-pad">
+    <div class="wrap">
+      <div class="label reveal">Contacto</div>
+      <h2 class="contact-head reveal">¿Hacemos algo <em>memorable</em> juntos?</h2>
+      <div class="cta-row reveal">
+        <a class="btn" href="mailto:hola@arteweb.es">Cuéntanos tu proyecto <span class="arrow">↗</span></a>
+      </div>
+      <div class="contact-info reveal">
+        <div>
+          <div class="ci-label">Email</div>
+          <a class="ci-val" href="mailto:hola@arteweb.es">hola@arteweb.es</a>
+        </div>
+        <div>
+          <div class="ci-label">Teléfono</div>
+          <a class="ci-val" href="tel:+34691342480">691 342 480</a>
+        </div>
+        <div>
+          <div class="ci-label">Disponibilidad</div>
+          <span class="ci-val">España · Lun–Vie</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap foot">
+      <div>
+        <div class="brand">arte<b>web</b></div>
+      </div>
+      <div class="f-meta">
+        Estudio de diseño y desarrollo web<br />
+        © 2026 ARTEweb
+      </div>
+    </div>
+  </footer>
+
+<script>
+  /* ---------- Brand colour on the 3D spinner ---------- */
+  (function () {
+    const mv = document.getElementById("spinner");
+    if (!mv) return;
+    const VERMILLON = [0.925, 0.27, 0.08, 1];
+    const METAL_RX = /metal|steel|chrome|bearing|silver|iron|alumin|nickel|roda/i;
+
+    function isMetal(m) {
+      const pbr = m.pbrMetallicRoughness;
+      if (pbr && pbr.metallicFactor != null && pbr.metallicFactor > 0.6) return true;
+      if (m.name && METAL_RX.test(m.name)) return true;
+      return false;
+    }
+
+    function tint() {
+      const mats = mv.model && mv.model.materials;
+      if (!mats || !mats.length) return false;
+      const bodies = mats.filter(function (m) { return !isMetal(m); });
+      const targets = bodies.length ? bodies : mats;
+      targets.forEach(function (m) {
+        const pbr = m.pbrMetallicRoughness;
+        if (!pbr) return;
+        try {
+          pbr.setBaseColorFactor(VERMILLON);
+          if (pbr.setMetallicFactor) pbr.setMetallicFactor(0.15);
+          if (pbr.setRoughnessFactor) pbr.setRoughnessFactor(0.45);
+        } catch (e) {}
+      });
+      return true;
+    }
+
+    let tries = 0;
+    (function loop() {
+      if (tint()) return;
+      if (tries++ < 60) setTimeout(loop, 200);
+    })();
+    mv.addEventListener("load", tint);
+  })();
+
+  /* ---------- Scroll reveal ---------- */
+  (function () {
+    const els = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.15 });
+    els.forEach(function (el, i) {
+      el.style.transitionDelay = (i % 6) * 0.06 + "s";
+      io.observe(el);
+    });
+  })();
+</script>
+</body>
+</html>
